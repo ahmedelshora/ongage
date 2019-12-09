@@ -1,7 +1,7 @@
 <?php
 
 ini_set('display_errors', 1);
-
+ini_set('memory_limit', '-1');
 require './Ongage.php';
 
 $userName = 'kurt.martin@pmg360.com';
@@ -11,17 +11,56 @@ $accountId = '10938';
 
 $object = new Ongage($userName,$password,$accountCode);
 
-echo "<pre>";
-// print_r($object->sendRequest('lists/78606'));
-// print_r($object->getSentEmails(7065537));
-// print_r($object->getContacts(1059953335));
-echo "</pre>";
-// die;
-print_r($object->getList());
 
-die;
 echo "<pre>";
-print_r($object->getReport());
+// print_r($object->contactActivity());
+$response = $object->contactActivity();
+
+if (isset($response) && $response->metadata->error != true) {
+
+	foreach ($response->payload as $value) {
+		// $fileResponse = $object->sendRequest();
+		// var_dump($fileResponse);
+
+
+
+		$url 	 =	'https://api.ongage.net/api/contact_activity/'.$value->id.'/export';
+
+	    $headers = [
+			'X_USERNAME:'.$userName,
+			'X_PASSWORD:'.$password,
+			'X_ACCOUNT_CODE:'.$accountCode,
+	        'Content-Type: application/json',
+	    ];
+
+	
+    	$ch = curl_init();
+    	curl_setopt($ch, CURLOPT_URL, $url);
+    	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    	$result = curl_exec($ch);
+    	$resoponse = $result;
+		
+		curl_close($ch);
+
+		$list =array_chunk(explode(',',$resoponse),18);
+
+		$file = fopen("contacts.csv","w");
+
+		foreach ($list as $line) {
+
+		  fputcsv($file, $line);
+		  
+		}
+
+		fclose($file);
+
+
+
+	}
+
+}
 echo "</pre>";
 
 

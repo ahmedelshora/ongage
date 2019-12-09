@@ -274,4 +274,13 @@ class Ongage
 		return $resoponse;
 	}
 
+
+	public function contactActivity(){
+		
+		$response = $this->sendRequest('contact_activity');
+		
+		return $response;
+
+	}
+
 }
