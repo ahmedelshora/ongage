@@ -104,17 +104,19 @@ class Ongage
 			 "status" =>  $status,
 			 "fields_selected" => 
 			 [
-				  "email",
-				  // "ip",
-				  // "status",
-				  "sub_date"
+				"email",
+				"ocx_unsubscribe_date",
+				// "status",
+				"sub_date",
+  				"first_name",
+  				"last_name"
 			],
 		];
 
 		$response = $this->sendRequest('export','post',$data);
 
 		if (isset($response->metadata->error) && !empty($response->metadata->error) && $response->metadata->error == true) {
-			
+			echo "<script>window.alert('Sorry An error occured')</script>";
 			die ('An error occured');
 		
 		}
@@ -127,7 +129,7 @@ class Ongage
 
 	// export report for contacts with status [] using campain id as mailed_id or by segment_id
 
-	public function exportContactReportRetrieve($reportId,$fileName = 'report_'){
+	public function exportContactReportRetrieve($reportId,$fileName = 'report_',$fileNameStart = ''){
 
 		$headers = [
 			'X_USERNAME:'.$this->userName,
@@ -144,7 +146,7 @@ class Ongage
 
 		if (isset($checkIfReportFinished) && !empty($checkIfReportFinished->metadata->error) && $checkIfReportFinished->metadata->error == true) {
 
-			$this->exportContactReportRetrieve($reportId,$fileName);
+			$this->exportContactReportRetrieve($reportId,$fileName,$fileNameStart);
 
 			return false;
 		}
@@ -156,7 +158,7 @@ class Ongage
 
 		$dir = './'; 
 
-		$file_name = $fileName.'_'.time().'_'.date('Y-m-d'); 
+		$file_name = $fileNameStart.$fileName.'_'.time().'_'.date('Y-m-d'); 
 		$save_file_loc = $dir . $file_name;
 		$fp = fopen($save_file_loc, 'wb'); 
 		// It set an option for a cURL transfer 

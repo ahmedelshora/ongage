@@ -30,27 +30,18 @@ if (isset($_GET['contact_report']) && $_GET['contact_report'] == 1) {
 
 	$campainsResponse = $object->getCampaign();
 
-	// echo "<pre>";
-	// print_r($campainsResponse);
-	// echo "</pre>";
-	// die;
 
-	foreach ($segmentsResponse as $item) {
-		if (!in_array($item->id,$segmentsIds)) {
-			$segmentsIds[] = $item->id;
-		}
-	}
-
-
-	foreach ($campainsResponse as $item) {
-		if (!in_array($item->id,$campansIds)) {
-			$campansIds[] = $item->id;
-		}
-	}
-
-	// die();
-	
 	$data = [];
+	
+	$allCampains = 1; 
+
+	if (isset($_GET['all_campain']) && $_GET['all_campain'] == 0) {
+
+		$allCampains = 0 ;
+
+	}
+
+	
 
 	if (isset($_GET['active']) && $_GET['active'] == 1) {
 		$data[] = 'active';
@@ -87,19 +78,58 @@ if (isset($_GET['contact_report']) && $_GET['contact_report'] == 1) {
 
 	}
 	
-	// print_r($data);
-	// die;
-	$retrieveFile = $object->exportContactReport($campansIds , $segmentsIds,$data);
-	
-	if (isset($retrieveFile) && !empty($retrieveFile->id)) {
-	
-		$object->exportContactReportRetrieve($retrieveFile->id,$data[0]);
-	
-		echo " Export finished at : ".date('h:i:s').'<br>';
+
+
+	foreach ($segmentsResponse as $item) {
+		if (!in_array($item->id,$segmentsIds)) {
+			$segmentsIds[] = $item->id;
+			
+			if ($allCampains == 0) {
+
+				exportFunction($object,$data,[],[$item->id],$item->name);
+
+			}
+
+		}
 
 	}
-	
+
+
+	foreach ($campainsResponse as $item) {
+		
+		if ($allCampains == 0) {
+
+			exportFunction($object,$data,[],[$item->id],$item->name);
+
+		}
+
+		if (!in_array($item->id,$campansIds)) {
+			$campansIds[] = $item->id;
+		}
+	}
+
+	if ($allCampains == 1) {
+
+		exportFunction($object,$data,$campansIds , $segmentsIds,'all_');
+
+	}
 
 }
 
+echo " Export finished at : ".date('h:i:s').'<br>';
 
+
+
+// this function run every campain or segment or all
+
+function exportFunction($object,$data,$campansIds , $segmentsIds,$fileNameStart = ''){
+
+	$retrieveFile = $object->exportContactReport($campansIds , $segmentsIds,$data,$fileNameStart);
+	
+	if (isset($retrieveFile) && !empty($retrieveFile->id)) {
+	
+		$object->exportContactReportRetrieve($retrieveFile->id,$data[0],$fileNameStart);
+
+	}
+	
+}
