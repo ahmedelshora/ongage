@@ -85,6 +85,10 @@ class Ongage
 
 	public function exportContactReport($mailingId = [],$segmentId = [],$status = [ 'active', 'unjoin-member', 'clicked', 'opened', 'inactive', 'bounced', 'complaint']){
 
+		// print_r($status);
+
+		// die;
+
 		if (empty($mailingId) && empty($segmentId)) {
 			
 			die("please enter array of mailing id or segment id ");
@@ -140,7 +144,7 @@ class Ongage
 
 		if (isset($checkIfReportFinished) && !empty($checkIfReportFinished->metadata->error) && $checkIfReportFinished->metadata->error == true) {
 
-			$this->exportContactReportRetrieve($reportId,$fileName='bounced');
+			$this->exportContactReportRetrieve($reportId,$fileName);
 
 			return false;
 		}

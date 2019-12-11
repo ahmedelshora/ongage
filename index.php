@@ -13,34 +13,43 @@ $accountCode = 'pmg360';
 
 $accountId = '10938';
 
-$segmentsIds=[];
 
-$campansIds = [];
-
-$object = new Ongage($userName,$password,$accountCode);
-
-$segmentsResponse = $object->getSegments();
-
-$campainsResponse = $object->getCampaign();
-
-foreach ($segmentsResponse as $item) {
-	if (!in_array($item->id,$segmentsIds)) {
-		$segmentsIds[] = $item->id;
-	}
-}
-
-
-foreach ($campainsResponse as $item) {
-	if (!in_array($item->id,$campansIds)) {
-		$campansIds[] = $item->id;
-	}
-}
-
-
-$retrieveFile = $object->exportContactReport($campansIds , $segmentsIds);
 
 if (isset($_GET['contact_report']) && $_GET['contact_report'] == 1) {
+	
+	echo "Export started at : ".date('h:i:s').'<br>';
+	
+	$segmentsIds=[];
 
+	$campansIds = [];
+
+	$object = new Ongage($userName,$password,$accountCode);
+
+	$segmentsResponse = $object->getSegments();
+
+
+	$campainsResponse = $object->getCampaign();
+
+	// echo "<pre>";
+	// print_r($campainsResponse);
+	// echo "</pre>";
+	// die;
+
+	foreach ($segmentsResponse as $item) {
+		if (!in_array($item->id,$segmentsIds)) {
+			$segmentsIds[] = $item->id;
+		}
+	}
+
+
+	foreach ($campainsResponse as $item) {
+		if (!in_array($item->id,$campansIds)) {
+			$campansIds[] = $item->id;
+		}
+	}
+
+	// die();
+	
 	$data = [];
 
 	if (isset($_GET['active']) && $_GET['active'] == 1) {
@@ -77,12 +86,16 @@ if (isset($_GET['contact_report']) && $_GET['contact_report'] == 1) {
 		$data = ['bounced'];
 
 	}
-
+	
+	// print_r($data);
+	// die;
+	$retrieveFile = $object->exportContactReport($campansIds , $segmentsIds,$data);
+	
 	if (isset($retrieveFile) && !empty($retrieveFile->id)) {
 	
-		$object->exportContactReportRetrieve($retrieveFile->id);
+		$object->exportContactReportRetrieve($retrieveFile->id,$data[0]);
 	
-		echo "export finished at : ".date('h:i:s');
+		echo " Export finished at : ".date('h:i:s').'<br>';
 
 	}
 	
