@@ -94,6 +94,14 @@ class Ongage
 			die("please enter array of mailing id or segment id ");
 
 		}
+		
+		$fieldsSelected = [
+			"email", "sub_date", "first_name", "last_name"
+		];
+
+		if (in_array('unjoin-member',$status)) {
+			$fieldsSelected[] = "ocx_unsubscribe_date";
+		}
 
 		$data =[
 			 "name" => $status[0]."_".time().'_'.date('Y-m-d'),
@@ -102,15 +110,7 @@ class Ongage
 			 "mailing_id" => $mailingId,
 			 "segment_id" => $segmentId,
 			 "status" =>  $status,
-			 "fields_selected" => 
-			 [
-				"email",
-				"ocx_unsubscribe_date",
-				// "status",
-				"sub_date",
-  				"first_name",
-  				"last_name"
-			],
+			 "fields_selected" => $fieldsSelected,
 		];
 
 		$response = $this->sendRequest('export','post',$data);

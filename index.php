@@ -79,7 +79,6 @@ if (isset($_GET['contact_report']) && $_GET['contact_report'] == 1) {
 	}
 	
 
-
 	foreach ($segmentsResponse as $item) {
 		if (!in_array($item->id,$segmentsIds)) {
 			$segmentsIds[] = $item->id;
